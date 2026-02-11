@@ -1,19 +1,17 @@
 import "./App.css";
 import Header from "./Components/Header/Header.jsx";
 import SearchHero from "./Components/SearchHero/SearchHero.jsx";
-import SearchResults from "./Components/SearchReults/SearchResults.jsx"; // لاحظ اسم فولدرك
-import { useState } from "react";
+import SearchResults from "./Components/SearchReults/SearchResults.jsx";
+import SearchDebug from "./Components/SearchDebug.jsx";
 
 function App() {
-  const [photos, setPhotos] = useState([]);
-
   return (
     <>
       <Header />
-      <SearchHero onResults={setPhotos} />
-
+      <SearchHero />
       <main className="container">
-        <SearchResults photos={photos} />
+        <SearchResults />
+        <SearchDebug />
       </main>
     </>
   );

@@ -1,11 +1,11 @@
 import styles from "./SearchResults.module.css";
+import { useSearch } from "../../context/SearchContext.jsx";
 
-export default function SearchResults({ photos }) {
+export default function SearchResults() {
+  const { photos } = useSearch();
+
   if (!photos?.length) {
-    return (
-      <div className={styles.empty}>
-      </div>
-    );
+    return <div className={styles.empty}></div>;
   }
 
   return (

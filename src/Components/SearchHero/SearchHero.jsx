@@ -1,81 +1,14 @@
-import { useEffect, useRef, useState } from "react";
 import styles from "./SearchHero.module.css";
+import { useSearch } from "../../context/SearchContext.jsx";
 
 const popularTags = ["Nature", "Ocean", "City", "Mountains", "Sky"];
 
-export default function SearchHero({ onResults }) {
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const API_KEY = import.meta.env.VITE_PEXELS_API_KEY;
-
-  const abortRef = useRef(null);
-  const debounceRef = useRef(null);
-
-  const searchPhotos = async (q) => {
-    const trimmed = q.trim();
-    if (!trimmed) return;
-
-    // cancel previous request (important for fast typing)
-    if (abortRef.current) abortRef.current.abort();
-    abortRef.current = new AbortController();
-
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `https://api.pexels.com/v1/search?query=${encodeURIComponent(trimmed)}&per_page=12`,
-        {
-          headers: { Authorization: API_KEY },
-          signal: abortRef.current.signal,
-        }
-      );
-
-      const data = await res.json();
-      onResults?.(data.photos || []);
-    } catch (err) {
-      // ignore abort errors
-      if (err?.name !== "AbortError") {
-        console.error(err);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetAll = () => {
-    setQuery("");
-    if (abortRef.current) abortRef.current.abort();
-    onResults?.([]); // يرجّع الصفحة “من الأول” (حسب ما بتعرضه لما النتايج تبقى فاضية)
-  };
-
-  // Auto search on typing (debounced)
-  useEffect(() => {
-    if (!API_KEY) return;
-
-    const q = query.trim();
-
-    // لو فاضي، رجّعها من الأول
-    if (!q) {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      if (abortRef.current) abortRef.current.abort();
-      onResults?.([]);
-      return;
-    }
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      searchPhotos(q);
-    }, 350);
-
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, API_KEY]);
+export default function SearchHero() {
+  const { query, setQuery, loading, searchPhotos, resetAll } = useSearch();
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // submit still works (اختياري) — هيعمل search فوري
-    searchPhotos(query);
+    searchPhotos(query); // submit يدوي (حتى لو debounce شغال)
   };
 
   return (
@@ -130,9 +63,7 @@ export default function SearchHero({ onResults }) {
                 key={tag}
                 type="button"
                 className={styles.pill}
-                onClick={() => {
-                  setQuery(tag); 
-                }}
+                onClick={() => setQuery(tag)}
               >
                 {tag}
               </button>
