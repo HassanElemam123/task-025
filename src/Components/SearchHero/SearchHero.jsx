@@ -8,7 +8,7 @@ export default function SearchHero() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    searchPhotos(query); // submit يدوي (حتى لو debounce شغال)
+    searchPhotos(query); 
   };
 
   return (

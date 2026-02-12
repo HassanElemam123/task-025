@@ -66,6 +66,7 @@ export function SearchProvider({ children }) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
+  // eslint-disable-next-line 
   }, [query, API_KEY]);
 
   const value = {
@@ -84,6 +85,7 @@ export function SearchProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line
 export function useSearch() {
   const ctx = useContext(SearchContext);
   if (!ctx) throw new Error("useSearch must be used within SearchProvider");
